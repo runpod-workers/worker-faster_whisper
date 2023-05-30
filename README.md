@@ -1,10 +1,12 @@
 <div align="center">
 
-<h1>Whisper | Worker</h1>
+<h1>Faster Whisper | Worker</h1>
 
-This repository contains the Whisper Worker for RunPod. The Whisper Worker is designed to process audio files using various Whisper models, with options for transcription formatting, language translation, and more. It's part of the RunPod Workers collection aimed at providing diverse functionality for endpoint processing.
+This repository contains the [Faster Whisper](https://github.com/guillaumekln/faster-whisper) Worker for RunPod.
 
-[![Docker Image](https://github.com/runpod-workers/worker-template/actions/workflows/CD-docker_dev.yml/badge.svg)](https://github.com/runpod-workers/worker-template/actions/workflows/CD-docker_dev.yml)
+[Endpoint Docs](https://docs.runpod.io/reference/faster-whisper)
+
+[Docker Image](https://hub.docker.com/r/runpod/ai-api-faster-whisper)
 
 </div>
 
