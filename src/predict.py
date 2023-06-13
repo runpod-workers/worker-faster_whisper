@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 # import torch
 import numpy as np
 
-from runpod.utils import rp_cuda
+from runpod.serverless.utils import rp_cuda
 
 from faster_whisper import WhisperModel
 from faster_whisper.utils import format_timestamp
