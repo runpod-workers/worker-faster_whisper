@@ -7,8 +7,10 @@ repository, with some modifications to make it work with the RP platform.
 
 from concurrent.futures import ThreadPoolExecutor
 
-import torch
+# import torch
 import numpy as np
+
+from runpod.utils import rp_cuda
 
 from faster_whisper import WhisperModel
 from faster_whisper.utils import format_timestamp
@@ -28,8 +30,8 @@ class Predictor:
             '''
             loaded_model = WhisperModel(
                 model_name,
-                device="cuda" if torch.cuda.is_available() else "cpu",
-                compute_type="float16" if torch.cuda.is_available() else "int8")
+                device="cuda" if rp_cuda.is_available() else "cpu",
+                compute_type="float16" if rp_cuda.is_available() else "int8")
 
             return model_name, loaded_model
 
