@@ -4,12 +4,21 @@ from faster_whisper import WhisperModel
 model_names = ["tiny", "base", "small", "medium", "large-v1", "large-v2"]
 
 
-def load_model(model_name):
+def load_model(selected_model):
+    '''
+    Load and cache models in parallel
+    '''
+    for _attempt in range(3):
+        while True:
+            try:
+                loaded_model = WhisperModel(
+                    selected_model, device="cpu", compute_type="int8")
+            except AttributeError:
+                continue
 
-    loaded_model = WhisperModel(
-        model_name, device="cpu", compute_type="int8")
+            break
 
-    return model_name, loaded_model
+    return selected_model, loaded_model
 
 
 models = {}
