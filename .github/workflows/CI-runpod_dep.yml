@@ -45,5 +45,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update package version
           title: Update runpod package version
-          body: The package version has been updated to ${{ env.NEW_VERSION_ENV }}.
+          body: The package version has been updated to ${{ env.NEW_VERSION_ENV }}
           branch: runpod-package-update
