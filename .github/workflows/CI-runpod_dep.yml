@@ -19,13 +19,13 @@ jobs:
         run: |
           echo "CURRENT_VERSION=$(grep -oP 'runpod==\K[^"]+' ./builder/requirements.txt)" >> $GITHUB_ENV
           echo "NEW_VERSION=$(curl -s https://pypi.org/pypi/runpod/json | jq -r .info.version)" >> $GITHUB_ENV
-          if [ -z "${{ env.action_state }}" ]; then
+          if [ -z "$NEW_VERSION" ]; then
               echo "Failed to fetch the new version."
               exit 1
           fi
-          if [ "$CURRENT_VERSION" != "${{ env.action_state }}" ]; then
+          if [ "$CURRENT_VERSION" != "$NEW_VERSION" ]; then
               # Update requirements.txt
-              sed -i "s/runpod==.*/runpod==${{ env.action_state }}/" ./builder/requirements.txt
+              sed -i "s/runpod==.*/runpod==$NEW_VERSION/" ./builder/requirements.txt
               echo "VERSION_UPDATED=true" >> $GITHUB_ENV
           fi
 
