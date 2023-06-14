@@ -23,6 +23,7 @@ jobs:
 
       - name: Run update_version.py
         run: |
+          pip install requests
           python ./.github/workflows/update_version.py
 
       - name: Create Pull Request
