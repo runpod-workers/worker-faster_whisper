@@ -1,3 +1,5 @@
+name: CI | Update runpod package version
+
 on:
   push:
     branches:
