@@ -1,0 +1,26 @@
+on:
+  push:
+    branches:
+      - "main"
+      - "master"
+    schedule:
+      - cron: "0 6 * * *"
+
+  workflow_dispatch:
+
+jobs:
+  check_dep:
+    runs-on: ubuntu-latest
+    name: Check python requirements file and update
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Check requirements.txt
+        uses: Verbalinsurection/track-pypi-version@1.1.0
+        id: checkr
+        with:
+          compush: "true"
+          backup: "false"
+          reqfile: "./builder/requirements.txt"
+      - name: Get if update needed output
+        run: echo ${{ steps.checkr.outputs.commit }}
