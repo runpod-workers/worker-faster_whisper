@@ -16,15 +16,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.11"
+      #   - name: Set up Python
+      #     uses: actions/setup-python@v2
+      #     with:
+      #       python-version: "3.11"
 
-      - name: Run update_version.py
+      #   - name: Run update_version.py
+      #     run: |
+      #       pip install requests
+      #       python ./.github/workflows/update_version.py
+
+      - name: Check for new package version and update
         run: |
-          pip install requests
-          python ./.github/workflows/update_version.py
+          # Get current version
+          new_version=$(curl -s https://pypi.org/pypi/runpod/json | jq -r .info.version)
+          if [ -z "$new_version" ]; then
+              echo "Failed to fetch the new version."
+              exit 1
+          fi
+          # Update requirements.txt
+          sed -i "s/runpod==.*/runpod==$new_version/" ./builder/requirements.txt
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
