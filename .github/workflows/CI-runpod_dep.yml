@@ -23,7 +23,7 @@ jobs:
 
       - name: Run update_version.py
         run: |
-          python update_version.py
+          python ./github/workflows/update_version.py
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
