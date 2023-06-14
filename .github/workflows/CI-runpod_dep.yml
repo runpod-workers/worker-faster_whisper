@@ -1,6 +1,9 @@
 name: CI | Update runpod package version
 
 on:
+  repository_dispatch:
+    types: [python-package-release]
+
   push:
     branches:
       - "main"
