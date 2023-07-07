@@ -28,7 +28,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_REPO }}/${{ secrets.DOCKERHUB_IMG }}:dev
       - uses: actions/checkout@v3
       - name: Run Tests
-        uses: direlines/runpod-test-runner@v1.4
+        uses: direlines/runpod-test-runner@v1.5
         with:
           image-tag: ${{ secrets.DOCKERHUB_REPO }}/${{ secrets.DOCKERHUB_IMG }}:dev
           runpod-api-key: ${{ secrets.RUNPOD_API_KEY }}
