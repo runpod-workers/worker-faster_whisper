@@ -35,7 +35,7 @@ class Predictor:
 
             return model_name, loaded_model
 
-        model_names = ["tiny", "base", "small", "medium", "large-v1", "large-v2"]
+        model_names = ["large-v2"]
         with ThreadPoolExecutor() as executor:
             for model_name, model in executor.map(load_model, model_names):
                 if model_name is not None:
@@ -44,7 +44,7 @@ class Predictor:
     def predict(
         self,
         audio,
-        model_name="base",
+        model_name="large-v2",
         transcription="plain text",
         translate=False,
         language=None,
@@ -60,6 +60,8 @@ class Predictor:
         compression_ratio_threshold=2.4,
         logprob_threshold=-1.0,
         no_speech_threshold=0.6,
+        vad_filter=False,
+        word_timestamps=False
     ):
         """
         Run a single prediction on the model
@@ -91,7 +93,8 @@ class Predictor:
                                                suppress_tokens=[-1],
                                                without_timestamps=False,
                                                max_initial_timestamp=1.0,
-                                               word_timestamps=False
+                                               word_timestamps=word_timestamps,
+                                               vad_filter=vad_filter
                                                ))
 
         segments = list(segments)
