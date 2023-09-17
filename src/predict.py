@@ -96,14 +96,14 @@ class Predictor:
 
         segments = list(segments)
 
-        # if transcription == "plain_text":
-        #     transcription = result["text"]
+        if transcription == "plain_text":
+           transcription = "".join([segment.text for segment in segments])
         # elif transcription == "srt":
         #     transcription = write_srt(result["segments"])
         # else:
         #     transcription = write_vtt(result["segments"])
 
-        if transcription == "srt":
+        elif transcription == "srt":
             transcription = write_srt(segments)
         else:
             transcription = write_vtt(segments)
