@@ -4,7 +4,7 @@ INPUT_VALIDATIONS = {
         'required': False
     },
     'audio_data': {
-        'type': List,
+        'type': list,
         'required': False
     },
     'model': {
