@@ -38,7 +38,7 @@ def run_whisper_job(job):
         job_input = input_validation['validated_input']
 
     with rp_debugger.LineTimer('download_step'):
-        job_input['audio'] = download_files_from_urls(job['id'], [job_input['audio']])[0]
+        job_input['audio'] = job_input.get('audio_data', download_files_from_urls(job['id'], [job_input['audio']])[0])
 
     with rp_debugger.LineTimer('prediction_step'):
         whisper_results = MODEL.predict(
