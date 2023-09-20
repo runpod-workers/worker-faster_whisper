@@ -75,7 +75,7 @@ class Predictor:
         else:
             temperature = [temperature]
 
-        segments, info = list(model.transcribe(str(audio),
+        segments, info = list(model.transcribe(audio,
                                                language=language,
                                                task="transcribe",
                                                beam_size=beam_size,
@@ -112,7 +112,7 @@ class Predictor:
             transcription = write_vtt(segments)
 
         if translate:
-            translation_segments, translation_info = model.transcribe(str(audio), task="translate", temperature=temperature
+            translation_segments, translation_info = model.transcribe(audio, task="translate", temperature=temperature
                                                                       )
 
         return {
