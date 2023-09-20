@@ -75,7 +75,7 @@ class Predictor:
         else:
             temperature = [temperature]
 
-        segments, info = list(model.transcribe(audio,
+        segments, info = list(model.transcribe(audio if isinstance(audio, str) else np.array(audio),
                                                language=language,
                                                task="transcribe",
                                                beam_size=beam_size,
