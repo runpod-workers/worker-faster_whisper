@@ -96,14 +96,14 @@ class Predictor:
 
         segments = list(segments)
 
-        # if transcription == "plain_text":
-        #     transcription = result["text"]
+        if transcription == "plain_text":
+            transcription = "\n".join([segment.text.lstrip() for segment in segments])
         # elif transcription == "srt":
         #     transcription = write_srt(result["segments"])
         # else:
         #     transcription = write_vtt(result["segments"])
 
-        if transcription == "srt":
+        elif transcription == "srt":
             transcription = write_srt(segments)
         else:
             transcription = write_vtt(segments)
@@ -117,6 +117,8 @@ class Predictor:
             "detected_language": info.language,
             "transcription": transcription,
             "translation": write_srt(translation_segments) if translate else None,
+            "device": "cuda" if rp_cuda.is_available() else "cpu",
+            "model": model_name,
         }
 
 

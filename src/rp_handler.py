@@ -17,6 +17,25 @@ MODEL = predict.Predictor()
 MODEL.setup()
 
 
+def base64_to_tempfile(base64_file: str) -> str:
+    '''
+    Convert base64 file to tempfile.
+
+    Parameters:
+    base64_file (str): Base64 file
+
+    Returns:
+    str: Path to tempfile
+    '''
+    import base64
+    import tempfile
+
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
+        temp_file.write(base64.b64decode(base64_file))
+
+    return temp_file.name
+
+
 @rp_debugger.FunctionTimer
 def run_whisper_job(job):
     '''
@@ -37,8 +56,11 @@ def run_whisper_job(job):
             return {"error": input_validation['errors']}
         job_input = input_validation['validated_input']
 
-    with rp_debugger.LineTimer('download_step'):
-        job_input['audio'] = download_files_from_urls(job['id'], [job_input['audio']])[0]
+    if job_input['audio'].startswith('http'):
+        with rp_debugger.LineTimer('download_step'):
+            job_input['audio'] = download_files_from_urls(job['id'], [job_input['audio']])[0]
+    else:
+        job_input['audio'] = base64_to_tempfile(job_input['audio'])
 
     with rp_debugger.LineTimer('prediction_step'):
         whisper_results = MODEL.predict(
