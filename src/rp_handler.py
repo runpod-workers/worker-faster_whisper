@@ -56,7 +56,7 @@ def run_whisper_job(job):
             return {"error": input_validation['errors']}
         job_input = input_validation['validated_input']
 
-    if True not in [job_input.get('audio', False), job_input.get('audio_base64', False)]:
+    if not job_input.get('audio', False) and not job_input.get('audio_base64', False):
         return {'error': 'Must provide either audio or audio_base64'}
 
     if job_input.get('audio', False) and job_input.get('audio_base64', False):
