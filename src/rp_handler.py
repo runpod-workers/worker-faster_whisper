@@ -1,10 +1,10 @@
-'''
+"""
 rp_handler.py for runpod worker
 
 rp_debugger:
 - Utility that provides additional debugging information.
 The handler must be called with --rp_debugger flag to enable it.
-'''
+"""
 
 from rp_schema import INPUT_VALIDATIONS
 from runpod.serverless.utils import download_files_from_urls, rp_cleanup, rp_debugger
@@ -56,10 +56,17 @@ def run_whisper_job(job):
             return {"error": input_validation['errors']}
         job_input = input_validation['validated_input']
 
-    if job_input['audio'].startswith('http'):
+    if True not in [job_input.get('audio', False), job_input.get('audio_base64', False)]:
+        return {'error': 'Must provide either audio or audio_base64'}
+
+    if job_input.get('audio', False) and job_input.get('audio_base64', False):
+        return {'error': 'Must provide either audio or audio_base64, not both'}
+
+    if job_input.get('audio', False):
         with rp_debugger.LineTimer('download_step'):
             job_input['audio'] = download_files_from_urls(job['id'], [job_input['audio']])[0]
-    else:
+
+    if job_input.get('audio_base64', False):
         job_input['audio'] = base64_to_tempfile(job_input['audio'])
 
     with rp_debugger.LineTimer('prediction_step'):
