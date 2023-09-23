@@ -1,7 +1,7 @@
 # Required Python packages get listed here, one per line.
 # Reccomended to lock the version number to avoid unexpected changes.
 
-runpod==1.2.0
+runpod==1.2.1
 # git+https://github.com/runpod/runpod-python.git
 
 # torch==2.0.1
