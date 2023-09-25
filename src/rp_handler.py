@@ -64,14 +64,14 @@ def run_whisper_job(job):
 
     if job_input.get('audio', False):
         with rp_debugger.LineTimer('download_step'):
-            job_input['audio'] = download_files_from_urls(job['id'], [job_input['audio']])[0]
+            audio_input = download_files_from_urls(job['id'], [job_input['audio']])[0]
 
     if job_input.get('audio_base64', False):
-        job_input['audio'] = base64_to_tempfile(job_input['audio'])
+        audio_input = base64_to_tempfile(job_input['audio_base64'])
 
     with rp_debugger.LineTimer('prediction_step'):
         whisper_results = MODEL.predict(
-            audio=job_input["audio"],
+            audio=audio_input,
             model_name=job_input["model"],
             transcription=job_input["transcription"],
             translate=job_input["translate"],

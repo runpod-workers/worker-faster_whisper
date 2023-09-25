@@ -32,3 +32,4 @@ jobs:
         with:
           image-tag: ${{ vars.DOCKERHUB_REPO }}/${{ vars.DOCKERHUB_IMG }}:dev
           runpod-api-key: ${{ secrets.RUNPOD_API_KEY }}
+          request-timeout: 600
