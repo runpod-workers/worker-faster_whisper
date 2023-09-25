@@ -1,7 +1,8 @@
 INPUT_VALIDATIONS = {
     'audio': {
         'type': str,
-        'required': False
+        'required': False,
+        'default': None
     },
     'audio_base64': {
         'type': str,
