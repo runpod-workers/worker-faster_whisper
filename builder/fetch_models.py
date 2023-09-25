@@ -12,7 +12,8 @@ def load_model(selected_model):
         while True:
             try:
                 loaded_model = WhisperModel(
-                    selected_model, device="cpu", compute_type="int8")
+                    selected_model, device="cpu", compute_type="int8",
+                    force_download=True, resume_download=False)
             except AttributeError:
                 continue
 
