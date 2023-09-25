@@ -8,12 +8,12 @@ def load_model(selected_model):
     '''
     Load and cache models in parallel
     '''
-    for _attempt in range(3):
+    for _attempt in range(5):
         while True:
             try:
                 loaded_model = WhisperModel(
                     selected_model, device="cpu", compute_type="int8")
-            except AttributeError:
+            except (AttributeError, OSError):
                 continue
 
             break
