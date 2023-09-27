@@ -88,6 +88,7 @@ def run_whisper_job(job):
             compression_ratio_threshold=job_input["compression_ratio_threshold"],
             logprob_threshold=job_input["logprob_threshold"],
             no_speech_threshold=job_input["no_speech_threshold"],
+            enable_vad=job_input["enable_vad"]
         )
 
     with rp_debugger.LineTimer('cleanup_step'):

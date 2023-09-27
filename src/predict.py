@@ -17,7 +17,7 @@ from faster_whisper.utils import format_timestamp
 
 
 class Predictor:
-    ''' A Predictor class for the Whisper model '''
+    """ A Predictor class for the Whisper model """
 
     def setup(self):
         """Load the model into memory to make running multiple predictions efficient"""
@@ -60,6 +60,7 @@ class Predictor:
         compression_ratio_threshold=2.4,
         logprob_threshold=-1.0,
         no_speech_threshold=0.6,
+        enable_vad=False,
     ):
         """
         Run a single prediction on the model
@@ -91,26 +92,27 @@ class Predictor:
                                                suppress_tokens=[-1],
                                                without_timestamps=False,
                                                max_initial_timestamp=1.0,
-                                               word_timestamps=False
+                                               word_timestamps=False,
+                                               vad_filter=enable_vad
                                                ))
 
         segments = list(segments)
 
         if transcription == "plain_text":
+            transcription = "".join([segment.text.lstrip() for segment in segments])
+        elif transcription == "formatted_text":
             transcription = "\n".join([segment.text.lstrip() for segment in segments])
-        # elif transcription == "srt":
-        #     transcription = write_srt(result["segments"])
-        # else:
-        #     transcription = write_vtt(result["segments"])
-
         elif transcription == "srt":
             transcription = write_srt(segments)
         else:
             transcription = write_vtt(segments)
 
         if translate:
-            translation_segments, translation_info = model.transcribe(str(audio), task="translate", temperature=temperature
-                                                                      )
+            translation_segments, translation_info = model.transcribe(
+                str(audio),
+                task="translate",
+                temperature=temperature
+            )
 
         return {
             "segments": format_segments(segments),
