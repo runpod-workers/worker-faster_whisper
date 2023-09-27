@@ -76,4 +76,4 @@ The following inputs can be used for testing the model:
     "model": "large-v2",
     "translation_time": 0.7796223163604736
 }
-````
+```
