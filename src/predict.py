@@ -99,7 +99,7 @@ class Predictor:
         segments = list(segments)
 
         if transcription == "plain_text":
-            transcription = "".join([segment.text.lstrip() for segment in segments])
+            transcription = " ".join([segment.text.lstrip() for segment in segments])
         elif transcription == "formatted_text":
             transcription = "\n".join([segment.text.lstrip() for segment in segments])
         elif transcription == "srt":
