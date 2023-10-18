@@ -88,5 +88,10 @@ INPUT_VALIDATIONS = {
         'type': float,
         'required': False,
         'default': 0.6
+    },
+    'enable_vad': {
+        'type': bool,
+        'required': False,
+        'default': False
     }
 }
