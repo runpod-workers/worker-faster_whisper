@@ -108,19 +108,23 @@ class Predictor:
         else:
             transcription = write_vtt(segments)
 
+        transcript_text = "\n".join([segment.text.lstrip() for segment in segments])
+
+        translation_segments = []  # Initialize translation_segments
+
         if translate:
-            translation_segments, translation_info = model.transcribe(str(audio), task="translate", temperature=temperature
-                                                                      )
+            translation_segments, translation_info = model.transcribe(str(audio), task="translate", temperature=temperature)
+            transcript_text = "\n".join([segment.text.lstrip() for segment in translation_segments])
 
         return {
             "segments": format_segments(segments),
             "detected_language": info.language,
             "transcription": transcription,
+            "transcript_text": transcript_text,
             "translation": write_srt(translation_segments) if translate else None,
             "device": "cuda" if rp_cuda.is_available() else "cpu",
             "model": model_name,
         }
-
 
 def format_segments(transcript):
     '''
