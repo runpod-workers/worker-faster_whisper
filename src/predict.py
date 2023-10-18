@@ -45,7 +45,7 @@ class Predictor:
         self,
         audio,
         model_name="base",
-        transcription="plain text",
+        transcription="plain_text",
         translate=False,
         language=None,
         temperature=0,
