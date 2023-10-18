@@ -93,5 +93,10 @@ INPUT_VALIDATIONS = {
         'type': bool,
         'required': False,
         'default': False
-    }
+    },
+    'word_timestamps': {
+        'type': bool,
+        'required': False,
+        'default': False
+    },
 }

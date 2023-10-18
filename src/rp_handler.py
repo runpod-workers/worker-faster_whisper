@@ -5,6 +5,8 @@ rp_debugger:
 - Utility that provides additional debugging information.
 The handler must be called with --rp_debugger flag to enable it.
 """
+import base64
+import tempfile
 
 from rp_schema import INPUT_VALIDATIONS
 from runpod.serverless.utils import download_files_from_urls, rp_cleanup, rp_debugger
@@ -27,9 +29,6 @@ def base64_to_tempfile(base64_file: str) -> str:
     Returns:
     str: Path to tempfile
     '''
-    import base64
-    import tempfile
-
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
         temp_file.write(base64.b64decode(base64_file))
 
@@ -88,7 +87,8 @@ def run_whisper_job(job):
             compression_ratio_threshold=job_input["compression_ratio_threshold"],
             logprob_threshold=job_input["logprob_threshold"],
             no_speech_threshold=job_input["no_speech_threshold"],
-            enable_vad=job_input["enable_vad"]
+            enable_vad=job_input["enable_vad"],
+            word_timestamps=job_input["word_timestamps"]
         )
 
     with rp_debugger.LineTimer('cleanup_step'):

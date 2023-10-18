@@ -33,6 +33,7 @@ This repository contains the [Faster Whisper](https://github.com/guillaumekln/fa
 | `logprob_threshold`                 | float | If the average log probability is lower than this value, treat the decoding as failed. Default: -1.0                                                     |
 | `no_speech_threshold`               | float | If the probability of the token is higher than this value, consider the segment as silence. Default: 0.6                                                 |
 | `enable_vad`                        | bool  | If True, use the voice activity detection (VAD) to filter out parts of the audio without speech. This step is using the Silero VAD model. Default: False |
+| `word_timestamps`                   | bool  | If True, include word timestamps in the output. Default: False                                                                                           |
 
 ## Test Inputs
 
