@@ -1,11 +1,18 @@
 INPUT_VALIDATIONS = {
     'audio': {
         'type': str,
-        'required': False
+        'required': False,
+        'default': None
     },
     'audio_data': {
         'type': list,
-        'required': False
+        'required': False,
+        'default': None
+    },
+    'audio_base64': {
+        'type': str,
+        'required': False,
+        'default': None
     },
     'model': {
         'type': str,
@@ -86,5 +93,15 @@ INPUT_VALIDATIONS = {
         'type': float,
         'required': False,
         'default': 0.6
-    }
+    },
+    'enable_vad': {
+        'type': bool,
+        'required': False,
+        'default': False
+    },
+    'word_timestamps': {
+        'type': bool,
+        'required': False,
+        'default': False
+    },
 }

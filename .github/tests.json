@@ -1,0 +1,25 @@
+[
+  {
+    "hardwareConfig": {
+      "endpointConfig": {
+        "gpuIds": "AMPERE_16",
+        "name": "16GB GPU"
+      }
+    },
+    "input": {
+      "audio": "https://github.com/runpod-workers/sample-inputs/raw/main/audio/gettysburg.wav",
+      "model": "base",
+      "transcription": "plain text",
+      "translate": false,
+      "temperature": 0,
+      "best_of": 5,
+      "beam_size": 5,
+      "suppress_tokens": "-1",
+      "condition_on_previous_text": false,
+      "temperature_increment_on_fallback": 0.2,
+      "compression_ratio_threshold": 2.4,
+      "logprob_threshold": -1,
+      "no_speech_threshold": 0.6
+    }
+  }
+]
