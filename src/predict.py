@@ -30,7 +30,8 @@ class Predictor:
 
     def setup(self):
         """Load the model into memory to make running multiple predictions efficient"""
-        model_names = ["tiny", "base", "small", "medium", "large-v1", "large-v2"]
+        model_names = ["tiny", "base", "small",
+                       "medium", "large-v1", "large-v2"]
         with ThreadPoolExecutor() as executor:
             for model_name, model in executor.map(self.load_model, model_names):
                 if model_name is not None:
@@ -67,7 +68,8 @@ class Predictor:
 
         if temperature_increment_on_fallback is not None:
             temperature = tuple(
-                np.arange(temperature, 1.0 + 1e-6, temperature_increment_on_fallback)
+                np.arange(temperature, 1.0 + 1e-6,
+                          temperature_increment_on_fallback)
             )
         else:
             temperature = [temperature]
@@ -96,15 +98,6 @@ class Predictor:
 
         segments = list(segments)
 
-        if transcription == "plain_text":
-            transcription = " ".join([segment.text.lstrip() for segment in segments])
-        elif transcription == "formatted_text":
-            transcription = "\n".join([segment.text.lstrip() for segment in segments])
-        elif transcription == "srt":
-            transcription = write_srt(segments)
-        else:
-            transcription = write_vtt(segments)
-
         if translate:
             translation_segments, translation_info = model.transcribe(
                 str(audio),
@@ -112,11 +105,33 @@ class Predictor:
                 temperature=temperature
             )
 
+        if transcription == "plain_text":
+            transcription = " ".join([segment.text.lstrip()
+                                     for segment in segments])
+            translation = " ".join([segment.text.lstrip()
+                                    for segment in translation_segments]) if translate else None
+
+        elif transcription == "formatted_text":
+            transcription = "\n".join([segment.text.lstrip()
+                                      for segment in segments])
+            translation = "\n".join([segment.text.lstrip()]
+                                    for segment in segments) if translate else None
+
+        elif transcription == "srt":
+            transcription = write_srt(segments)
+            translation = write_srt(
+                translation_segments) if translate else None
+
+        else:
+            transcription = write_vtt(segments)
+            translation = write_vtt(
+                translation_segments) if translate else None
+
         results = {
             "segments": format_segments(segments),
             "detected_language": info.language,
             "transcription": transcription,
-            "translation": write_srt(translation_segments) if translate else None,
+            "translation": translation,
             "device": "cuda" if rp_cuda.is_available() else "cpu",
             "model": model_name,
         }
@@ -131,7 +146,6 @@ class Predictor:
                         "end": word.end,
                     })
             results["word_timestamps"] = word_timestamps
-
 
         return results
 
