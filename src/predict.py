@@ -161,7 +161,7 @@ def write_vtt(transcript):
     result = ""
 
     for segment in transcript:
-        result += f"{format_timestamp(segment.start)} --> {format_timestamp(segment.end)}\n"
+        result += f"{format_timestamp(segment.start, always_include_hours=True)} --> {format_timestamp(segment.end)}\n"
         result += f"{segment.text.strip().replace('-->', '->')}\n"
         result += "\n"
 
