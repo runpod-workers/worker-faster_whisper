@@ -73,6 +73,7 @@ def run_whisper_job(job):
             audio=audio_input,
             model_name=job_input["model"],
             transcription=job_input["transcription"],
+            translation=job_input["translation"],
             translate=job_input["translate"],
             language=job_input["language"],
             temperature=job_input["temperature"],

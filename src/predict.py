@@ -42,6 +42,7 @@ class Predictor:
         model_name="base",
         transcription="plain_text",
         translate=False,
+        translation="plain_text",
         language=None,
         temperature=0,
         best_of=5,
@@ -96,14 +97,7 @@ class Predictor:
 
         segments = list(segments)
 
-        if transcription == "plain_text":
-            transcription = " ".join([segment.text.lstrip() for segment in segments])
-        elif transcription == "formatted_text":
-            transcription = "\n".join([segment.text.lstrip() for segment in segments])
-        elif transcription == "srt":
-            transcription = write_srt(segments)
-        else:
-            transcription = write_vtt(segments)
+        transcription = format_segments(transcription, segments)
 
         if translate:
             translation_segments, translation_info = model.transcribe(
@@ -112,11 +106,13 @@ class Predictor:
                 temperature=temperature
             )
 
+            translation = format_segments(translation, translation_segments)
+
         results = {
-            "segments": format_segments(segments),
+            "segments": serialize_segments(segments),
             "detected_language": info.language,
             "transcription": transcription,
-            "translation": write_srt(translation_segments) if translate else None,
+            "translation": translation if translate else None,
             "device": "cuda" if rp_cuda.is_available() else "cpu",
             "model": model_name,
         }
@@ -136,9 +132,9 @@ class Predictor:
         return results
 
 
-def format_segments(transcript):
+def serialize_segments(transcript):
     '''
-    Format the segments to be returned in the API response.
+    Serialize the segments to be returned in the API response.
     '''
     return [{
         "id": segment.id,
@@ -152,6 +148,21 @@ def format_segments(transcript):
         "compression_ratio": segment.compression_ratio,
         "no_speech_prob": segment.no_speech_prob
     } for segment in transcript]
+
+
+def format_segments(format, segments):
+    '''
+    Format the segments to the desired format
+    '''
+
+    if format == "plain_text":
+        return " ".join([segment.text.lstrip() for segment in segments])
+    elif format == "formatted_text":
+        return "\n".join([segment.text.lstrip() for segment in segments])
+    elif format == "srt":
+        return write_srt(segments)
+    
+    return write_vtt(segments)
 
 
 def write_vtt(transcript):
