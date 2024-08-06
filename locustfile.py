@@ -46,4 +46,4 @@ class ApiUser(HttpUser):
 
 if __name__ == "__main__":
     import os
-    os.system("locust -f this_file_name.py")
+    os.system("locust -f locustfile.py")
