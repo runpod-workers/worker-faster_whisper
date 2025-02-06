@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from faster_whisper import WhisperModel
 from runpod import RunPodLogger
-from urllib.parse import urljoin
+from urllib.parse import urlparse
 
 logger = RunPodLogger()
 model_names = [
@@ -29,7 +29,7 @@ def topath(raw: str) -> str:
             f"invalid model: expected one in the form user/model[:path], but got {model}"
         )
     user, model = model.rsplit("/", maxsplit=1)
-    return urljoin("/runpod", "cache", "models", user, model, branch)
+    return "/".join(c.strip("/") for c in (user, model, branch))
 
 
 def modelpaths() -> list[str]:
