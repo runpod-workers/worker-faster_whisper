@@ -1,6 +1,9 @@
 from concurrent.futures import ThreadPoolExecutor
 from faster_whisper import WhisperModel
+from runpod import RunPodLogger
+from urllib.parse import urljoin
 
+logger = RunPodLogger()
 model_names = [
     "openai/whisper-tiny",
     "openai/whisper-base",
@@ -15,31 +18,43 @@ model_names = [
 MODEL_CACHE_PATH_TEMPLATE = "/runpod/cache/{model}/{revision}"
 
 
-def resolve_model_cache_path(repositories: list[str]) -> list[str]:
-    return [
-        MODEL_CACHE_PATH_TEMPLATE.format(
-            # the model is always the first element
-            model=repository_and_revision[0],
-            # the revision is the second element if it exists
-            revision=repository_and_revision[1]
-            if len(repository_and_revision) > 1
-            else "main",
+def topath(raw: str) -> str:
+    raw = raw.strip()
+    if ":" in raw:
+        model, branch = raw.rsplit(":", maxsplit=1)
+    else:
+        model, branch = raw, "main"
+    if "/" not in model:
+        raise ValueError(
+            f"invalid model: expected one in the form user/model[:path], but got {model}"
         )
-        # the repository is split into the model and revision by the last colon
-        for repository_and_revision in (
-            repository.rsplit(":", 1)
-            for repository in (
-                *(os.environ.get("RUNPOD_HUGGINGFACE_MODEL", "").split(",")),
-                *deprecated_model_names.split(";"),
-            )
-        )
-    ]
+    user, model = model.rsplit("/", maxsplit=1)
+    return urljoin("/runpod", "cache", "models", user, model, branch)
+
+
+def modelpaths() -> list[str]:
+    raw = os.environ.get("RUNPOD_HUGGINGFACE_MODEL")
+    if not raw:
+        return []
+    return [topath(m) for m in raw.split(",")]
 
 
 def load_model(selected_model):
     """
     Load and cache models in parallel
     """
+    selected_model = modelpaths()
+    if len(selected_model) == 0:
+        logger.error(
+            "You must provide a model in the RUNPOD_HUGGINGFACE_MODEL environment variable"
+        )
+        return None, None
+    elif len(selected_model) > 1:
+        logger.error(
+            "Whisper only supports a single model at a time, but multiple were provided in the RUNPOD_HUGGINGFACE_MODEL environment variable"
+        )
+        return None, None
+    selected_model = selected_model[0]
     # TODO: this seems like a hack?
     for _attempt in range(5):
         while True:
