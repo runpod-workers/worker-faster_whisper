@@ -15,7 +15,7 @@ model_names = [
     "openai/whisper-large-v3-turbo",
 ]
 
-MODEL_CACHE_PATH_TEMPLATE = "/runpod/cache/{model}/{revision}"
+MODEL_CACHE_PATH_TEMPLATE = "/runpod/cache/model/{path}"
 
 
 def topath(raw: str) -> str:
@@ -29,7 +29,9 @@ def topath(raw: str) -> str:
             f"invalid model: expected one in the form user/model[:path], but got {model}"
         )
     user, model = model.rsplit("/", maxsplit=1)
-    return "/".join(c.strip("/") for c in (user, model, branch))
+    return MODEL_CACHE_PATH_TEMPLATE.format(
+        path="/".join(c.strip("/") for c in (user, model, branch))
+    )
 
 
 def modelpaths() -> list[str]:
