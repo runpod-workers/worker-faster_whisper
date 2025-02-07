@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from faster_whisper import WhisperModel
 from runpod import RunPodLogger
 from urllib.parse import urlparse
+import os
 
 logger = RunPodLogger()
 model_names = [
