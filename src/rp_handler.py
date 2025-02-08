@@ -1,13 +1,10 @@
 # look for main() to see the actual entry point.
-from typing import Any
+from typing import Any, Literal, Union
 import base64
-
 import faster_whisper
-import faster_whisper.transcribe
 import numpy as np
 import os
 import requests
-import rp_cuda
 import runpod
 import subprocess
 import sys
@@ -40,9 +37,6 @@ def cachedmodel2path(basedir="/runpod/cache/model") -> dict[str, str]:
                 )
             model2path[revision[0]] = os.path.join(basedir, revision[0])
     return model2path
-
-
-from typing import Union
 
 
 def log(msg: str, **kwargs) -> None:
@@ -84,9 +78,6 @@ def format_transcript(
             f"unknown transcription format: {format}: expected one of 'plain_text', 'vtt', 'srt', 'rich_text'"
         )
     return result
-
-
-from typing import Literal
 
 
 def handle(
@@ -239,18 +230,19 @@ def handle(
             )
             log(f"translated in {time.time()-start:.2f}")
 
-        format_segment = lambda segment: {
-            "id": segment.id,
-            "seek": segment.seek,
-            "start": segment.start,
-            "end": segment.end,
-            "text": segment.text,
-            "tokens": segment.tokens,
-            "temperature": segment.temperature,
-            "avg_logprob": segment.avg_logprob,
-            "compression_ratio": segment.compression_ratio,
-            "no_speech_prob": segment.no_speech_prob,
-        }
+        def format_segment(segment):
+            return {
+                "id": segment.id,
+                "seek": segment.seek,
+                "start": segment.start,
+                "end": segment.end,
+                "text": segment.text,
+                "tokens": segment.tokens,
+                "temperature": segment.temperature,
+                "avg_logprob": segment.avg_logprob,
+                "compression_ratio": segment.compression_ratio,
+                "no_speech_prob": segment.no_speech_prob,
+            }
 
         results = {
             "detected_language": transcribe_info.language,
@@ -283,7 +275,8 @@ def handle(
             ),
         }
         # drop None values
-        return {k: v for k, v in results.items() if v is not None}  # drop None values
+        # drop None values
+        return {k: v for k, v in results.items() if v is not None}
 
 
 def main() -> None:
@@ -292,29 +285,27 @@ def main() -> None:
     exactly once on boot, then delegate to the handle function
     """
     device: Literal["cuda", "cpu"]
-    compute_type: str
+    compute_type: Literal["float16", "int8"]
     log("checking gpu settings")
     device_index: Union[list[int], int]
-    if rp_cuda.is_available():
-        device = "cuda"
+    try:
+        p = subprocess.run(
+            ["nvidia-smi", "--query-gpu", "count", "--format=csv,noheader"],
+            stdout=subprocess.PIPE,
+        )
+        p.check_returncode()
+        device_index = list(
+            range(int(p.stdout.decode().strip()))
+        )  # i.e, " 4 " -> [0,1,2,3]
+        log(f"gpu: found {len(device_index)} GPUs")
         compute_type = "float16"
-        log(f"gpu: cuda available: quantizing using {compute_type}")
-        try:
-            p = subprocess.run(
-                ["nvidia-smi", "--query-gpu", "count", "--format=csv,noheader"],
-                stdout=subprocess.PIPE,
-            )
-            p.check_returncode()
-            device_index = list(
-                range(int(p.stdout.decode().strip()))
-            )  # i.e, " 4 " -> [0,1,2,3]
-        except Exception as e:
-            log(f"failed to get number of GPUs: {e}")
-            device_index = 0
-    else:
-        log("gpu: cuda not available; falling back to CPU mode")
-        device = "cpu"
+        device = "cuda"
+
+    except Exception as e:
+        log(f"failed to get number of GPUs: {e}: falling back to CPU mode")
+        device_index = 0
         compute_type = "int8"
+        device = "cpu"
 
     print(f"runpod: loading models from filesystem...", file=sys.stderr)
     model2path = cachedmodel2path()
