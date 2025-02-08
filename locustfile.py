@@ -18,32 +18,33 @@ def generate_random_audio(duration_ms):
         samples.tobytes(),
         frame_rate=44100,
         sample_width=samples.dtype.itemsize,
-        channels=1
+        channels=1,
     )
 
     # Convert the audio segment to a base64 string
     buffer = io.BytesIO()
     audio_segment.export(buffer, format="wav")
-    base64_audio = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    base64_audio = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
     return base64_audio
+
 
 class ApiUser(HttpUser):
     @task
     def send_audio_request(self):
         headers = {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         }
-        audio_data = generate_random_audio(1000)    # 1 second audio
-        
-        data = {
-            "input": {
-                "audio": audio_data
-            }
-        }
-        
-        self.client.post("/v2/xxxxx/runsync", json=data, headers=headers)  # Replace with your endpoint ID
+        audio_data = generate_random_audio(1000)  # 1 second audio
+
+        data = {"input": {"audio": audio_data}}
+
+        self.client.post(
+            "/v2/xxxxx/runsync", json=data, headers=headers
+        )  # Replace with your endpoint ID
+
 
 if __name__ == "__main__":
     import os
+
     os.system("locust -f locustfile.py")
