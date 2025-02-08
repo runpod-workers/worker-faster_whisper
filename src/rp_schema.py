@@ -1,23 +1,28 @@
 INPUT_VALIDATIONS = {
     'audio': {
-        'type': str,
+        'type': str|None,
         'required': False,
         'default': None
     },
     'audio_base64': {
-        'type': str,
+        'type': str|None,
         'required': False,
         'default': None
     },
     'model': {
         'type': str,
         'required': False,
-        'default': 'base'
+        'default': 'large-v3'
     },
     'transcription': {
         'type': str,
         'required': False,
         'default': 'plain_text'
+    },
+    'multilingual': {
+        'type': bool,
+        'required': False,
+        'default': False
     },
     'translate': {
         'type': bool,
@@ -30,14 +35,14 @@ INPUT_VALIDATIONS = {
         'default': 'plain_text'
     },
     'language': {
-        'type': str,
+        'type': str|None,
         'required': False,
         'default': None
     },
     'temperature': {
         'type': float,
         'required': False,
-        'default': 0
+        'default': 0.0
     },
     'best_of': {
         'type': int,
@@ -57,7 +62,7 @@ INPUT_VALIDATIONS = {
     'length_penalty': {
         'type': float,
         'required': False,
-        'default': 0
+        'default': 0.0
     },
     'suppress_tokens': {
         'type': str,
@@ -65,7 +70,7 @@ INPUT_VALIDATIONS = {
         'default': '-1'
     },
     'initial_prompt': {
-        'type': str,
+        'type': str|None,
         'required': False,
         'default': None
     },
@@ -97,11 +102,16 @@ INPUT_VALIDATIONS = {
     'enable_vad': {
         'type': bool,
         'required': False,
-        'default': False
+        'default': True
     },
     'word_timestamps': {
         'type': bool,
         'required': False,
         'default': False
     },
+    'batch_size': {
+        'type': int,
+        'required': False,
+        'default': 8
+    }
 }
