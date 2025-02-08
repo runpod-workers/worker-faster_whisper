@@ -287,6 +287,10 @@ def handle(
 
 
 def main() -> None:
+    """
+    run the serverless worker, loading models from the filesystem (specified by RUNPOD_HUGGINGFACE_MODEL via the modelcache)
+    exactly once on boot, then delegate to the handle function
+    """
     device: Literal["cuda", "cpu"]
     compute_type: str
     log("checking gpu settings")
@@ -329,9 +333,11 @@ def main() -> None:
         )
         log(f"loaded model {model} in {time.time()-start:.2f}")
 
-    friendlyModel2Whisper = (
-        {}
-    )  # we want to map user/model, model, user/model/revision, and user/model:revision to the same model so it's easy for our clients to use
+    friendlyModel2Whisper = {}
+    # let's make things easier for our users.
+    # we specify models by user/model/revision, but they might not know about git revisions -
+    # ML customers are not experienced software developers.
+    # we'll allow them to specify models by user/model, model, user/model/revision, and user/model:revision
     for path, whisper in model2Whisper.items():
         *_, user, model, revision = path.split("/")
         friendlyModel2Whisper[f"{user}/{model}"] = whisper
@@ -339,15 +345,12 @@ def main() -> None:
         friendlyModel2Whisper[f"{user}/{model}/{revision}"] = whisper
         friendlyModel2Whisper[f"{user}/{model}:{revision}"] = whisper
 
-    model2Whisper = (
-        friendlyModel2Whisper  # overwrite the old model2Whisper with the new one
-    )
     log(f"loaded {len(model2Whisper)} models: {model2Whisper.keys()}")
     log(f"starting serverless worker...")
     runpod.start(
         {
             "handler": lambda event: handle(
-                event=event, model2Whisper=model2Whisper, device=device
+                event=event, model2Whisper=friendlyModel2Whisper, device=device
             ),
         }
     )
