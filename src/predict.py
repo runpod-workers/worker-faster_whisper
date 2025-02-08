@@ -9,7 +9,7 @@ import numpy as np
 
 from runpod.serverless.utils import rp_cuda
 
-from faster_whisper import WhisperModel
+from faster_whisper import WhisperModel, BatchedInferencePipeline
 from faster_whisper.utils import format_timestamp
 
 
@@ -26,11 +26,14 @@ class Predictor:
             device="cuda" if rp_cuda.is_available() else "cpu",
             compute_type="float16" if rp_cuda.is_available() else "int8")
 
+        # Print the model name and the device it is running on
+        print(f"Model '{model_name}' loaded on {"cuda" if rp_cuda.is_available() else "cpu"}")
+
         return model_name, loaded_model
 
     def setup(self):
         """Load the model into memory to make running multiple predictions efficient"""
-        model_names = ["tiny", "base", "small", "medium", "large-v1", "large-v2", "large-v3"]
+        model_names = ["large-v3", "distil-large-v3"]
         with ThreadPoolExecutor() as executor:
             for model_name, model in executor.map(self.load_model, model_names):
                 if model_name is not None:
@@ -41,6 +44,7 @@ class Predictor:
         audio,
         model_name="base",
         transcription="plain_text",
+        multilingual=False,
         translate=False,
         translation="plain_text",
         language=None,
@@ -57,7 +61,8 @@ class Predictor:
         logprob_threshold=-1.0,
         no_speech_threshold=0.6,
         enable_vad=False,
-        word_timestamps=False
+        word_timestamps=False,
+        batch_size=8,
     ):
         """
         Run a single prediction on the model
@@ -68,43 +73,68 @@ class Predictor:
 
         if temperature_increment_on_fallback is not None:
             temperature = tuple(
-                np.arange(temperature, 1.0 + 1e-6, temperature_increment_on_fallback)
+                np.arange(temperature, 1.0 + 1e-6,
+                          temperature_increment_on_fallback)
             )
         else:
             temperature = [temperature]
 
-        segments, info = list(model.transcribe(str(audio),
-                                               language=language,
-                                               task="transcribe",
-                                               beam_size=beam_size,
-                                               best_of=best_of,
-                                               patience=patience,
-                                               length_penalty=length_penalty,
-                                               temperature=temperature,
-                                               compression_ratio_threshold=compression_ratio_threshold,
-                                               log_prob_threshold=logprob_threshold,
-                                               no_speech_threshold=no_speech_threshold,
-                                               condition_on_previous_text=condition_on_previous_text,
-                                               initial_prompt=initial_prompt,
-                                               prefix=None,
-                                               suppress_blank=True,
-                                               suppress_tokens=[-1],
-                                               without_timestamps=False,
-                                               max_initial_timestamp=1.0,
-                                               word_timestamps=word_timestamps,
-                                               vad_filter=enable_vad
-                                               ))
+        batched_model = BatchedInferencePipeline(model=model)
+
+        transcribe_args = {
+            "audio": str(audio),
+            "language": language,
+            "task": "transcribe",
+            "multilingual": multilingual,
+            "beam_size": beam_size,
+            "best_of": best_of,
+            "patience": patience,
+            "length_penalty": length_penalty,
+            "temperature": temperature,
+            "compression_ratio_threshold": compression_ratio_threshold,
+            "log_prob_threshold": logprob_threshold,
+            "no_speech_threshold": no_speech_threshold,
+            "condition_on_previous_text": condition_on_previous_text,
+            "initial_prompt": initial_prompt,
+            "prefix": None,
+            "suppress_blank": True,
+            "suppress_tokens": [-1],
+            "without_timestamps": False,
+            "max_initial_timestamp": 1.0,
+            "word_timestamps": word_timestamps,
+            "vad_filter": enable_vad,
+        }
+
+        if enable_vad:
+            print(
+                f"VAD enabled for model '{model_name}', running batched segment")
+            transcribe_args["batch_size"] = batch_size
+            segments, info = list(batched_model.transcribe(**transcribe_args))
+        else:
+            print(
+                f"VAD disabled for model '{model_name}', running non-batched segment")
+            segments, info = list(model.transcribe(**transcribe_args))
 
         segments = list(segments)
 
         transcription = format_segments(transcription, segments)
 
         if translate:
-            translation_segments, translation_info = model.transcribe(
-                str(audio),
-                task="translate",
-                temperature=temperature
-            )
+            print(f"Starting translation with model '{model_name}'")
+            if enable_vad:
+                translation_segments, translation_info = batched_model.transcribe(
+                    str(audio),
+                    task="translate",
+                    temperature=temperature,
+                    batch_size=batch_size,
+                )
+            else:
+                translation_segments, translation_info = model.transcribe(
+                    str(audio),
+                    task="translate",
+                    temperature=temperature,
+                )
+            print(f"Translation completed with model '{model_name}'")
 
             translation = format_segments(translation, translation_segments)
 
@@ -127,7 +157,6 @@ class Predictor:
                         "end": word.end,
                     })
             results["word_timestamps"] = word_timestamps
-
 
         return results
 
@@ -161,7 +190,7 @@ def format_segments(format, segments):
         return "\n".join([segment.text.lstrip() for segment in segments])
     elif format == "srt":
         return write_srt(segments)
-    
+
     return write_vtt(segments)
 
 

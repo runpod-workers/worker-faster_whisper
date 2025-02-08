@@ -31,6 +31,7 @@ def base64_to_tempfile(base64_file: str) -> str:
     '''
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
         temp_file.write(base64.b64decode(base64_file))
+    print(f"Created tempfile: {temp_file.name}")
 
     return temp_file.name
 
@@ -63,7 +64,8 @@ def run_whisper_job(job):
 
     if job_input.get('audio', False):
         with rp_debugger.LineTimer('download_step'):
-            audio_input = download_files_from_urls(job['id'], [job_input['audio']])[0]
+            audio_input = download_files_from_urls(
+                job['id'], [job_input['audio']])[0]
 
     if job_input.get('audio_base64', False):
         audio_input = base64_to_tempfile(job_input['audio_base64'])
@@ -74,6 +76,7 @@ def run_whisper_job(job):
             model_name=job_input["model"],
             transcription=job_input["transcription"],
             translation=job_input["translation"],
+            multilingual=job_input["multilingual"],
             translate=job_input["translate"],
             language=job_input["language"],
             temperature=job_input["temperature"],
@@ -89,7 +92,8 @@ def run_whisper_job(job):
             logprob_threshold=job_input["logprob_threshold"],
             no_speech_threshold=job_input["no_speech_threshold"],
             enable_vad=job_input["enable_vad"],
-            word_timestamps=job_input["word_timestamps"]
+            word_timestamps=job_input["word_timestamps"],
+            batch_size=job_input["batch_size"],
         )
 
     with rp_debugger.LineTimer('cleanup_step'):

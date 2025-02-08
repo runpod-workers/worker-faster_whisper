@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>Faster Whisper | Worker</h1>
+# Faster Whisper | Worker
 
 This repository contains the [Faster Whisper](https://github.com/guillaumekln/faster-whisper) Worker for RunPod. The Whisper Worker is designed to process audio files using various Whisper models, with options for transcription formatting, language translation, and more. It's part of the RunPod Workers collection aimed at providing diverse functionality for endpoint processing.
 
@@ -16,16 +16,17 @@ This repository contains the [Faster Whisper](https://github.com/guillaumekln/fa
 |-------------------------------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `audio`                             | Path  | Audio file                                                                                                                                               |
 | `audio_base64`                      | str   | Base64-encoded audio file                                                                                                                                |
-| `model`                             | str   | Choose a Whisper model. Choices: "tiny", "base", "small", "medium", "large-v1", "large-v2", "large-v3". Default: "base"                                  |
+| `model`                             | str   | Choose a Whisper model. Choices: "distil-large-v3" "large-v3". Default: "large-v3"                              |
 | `transcription`                     | str   | Choose the format for the transcription. Choices: "plain_text", "formatted_text", "srt", "vtt". Default: "plain_text"                                    |
+| `multilingual`                      | bool  | Enable multilingual processing. Default: False                                                                                                           |
 | `translate`                         | bool  | Translate the text to English when set to True. Default: False                                                                                           |
 | `translation`                       | str   | Choose the format for the translation. Choices: "plain_text", "formatted_text", "srt", "vtt". Default: "plain_text"                                      |
 | `language`                          | str   | Language spoken in the audio, specify None to perform language detection. Default: None                                                                  |
 | `temperature`                       | float | Temperature to use for sampling. Default: 0                                                                                                              |
 | `best_of`                           | int   | Number of candidates when sampling with non-zero temperature. Default: 5                                                                                 |
 | `beam_size`                         | int   | Number of beams in beam search, only applicable when temperature is zero. Default: 5                                                                     |
-| `patience`                          | float | Optional patience value to use in beam decoding. Default: None                                                                                           |
-| `length_penalty`                    | float | Optional token length penalty coefficient (alpha). Default: None                                                                                         |
+| `patience`                          | float | Optional patience value to use in beam decoding. Default: 1.0                                                                                            |
+| `length_penalty`                    | float | Optional token length penalty coefficient (alpha). Default: 0.0                                                                                          |
 | `suppress_tokens`                   | str   | Comma-separated list of token ids to suppress during sampling. Default: "-1"                                                                             |
 | `initial_prompt`                    | str   | Optional text to provide as a prompt for the first window. Default: None                                                                                 |
 | `condition_on_previous_text`        | bool  | If True, provide the previous output of the model as a prompt for the next window. Default: True                                                         |
@@ -33,8 +34,9 @@ This repository contains the [Faster Whisper](https://github.com/guillaumekln/fa
 | `compression_ratio_threshold`       | float | If the gzip compression ratio is higher than this value, treat the decoding as failed. Default: 2.4                                                      |
 | `logprob_threshold`                 | float | If the average log probability is lower than this value, treat the decoding as failed. Default: -1.0                                                     |
 | `no_speech_threshold`               | float | If the probability of the token is higher than this value, consider the segment as silence. Default: 0.6                                                 |
-| `enable_vad`                        | bool  | If True, use the voice activity detection (VAD) to filter out parts of the audio without speech. This step is using the Silero VAD model. Default: False |
+| `enable_vad`                        | bool  | If True, use the voice activity detection (VAD) to filter out parts of the audio without speech. This step is using the Silero VAD model. Default: True  |
 | `word_timestamps`                   | bool  | If True, include word timestamps in the output. Default: False                                                                                           |
+| `batch_size`                        | int   | Batch size for processing. Default: 8                                                                                                                    |
 
 ## Test Inputs
 
