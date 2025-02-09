@@ -8,6 +8,7 @@ import requests
 import runpod
 import subprocess
 import sys
+import traceback
 import tempfile
 import time
 
@@ -308,7 +309,13 @@ def main() -> None:
         device = "cpu"
 
     print(f"runpod: loading models from filesystem...", file=sys.stderr)
-    model2path = cachedmodel2path()
+    try:
+        model2path = cachedmodel2path()
+    except FileNotFoundError as f:
+        log(
+            f"""{f.filename} not found. HELP: please re-check your modelcache settings in your pod configuration"""
+        )
+        raise
     model2Whisper = {}
 
     for model, path in model2path.items():
@@ -338,14 +345,27 @@ def main() -> None:
 
     log(f"loaded {len(model2Whisper)} models: {model2Whisper.keys()}")
     log(f"starting serverless worker...")
+
+    def handler(event: dict[str, Any]) -> dict[str, Any]:
+        try:
+            return handle(
+                event=event, model2Whisper=friendlyModel2Whisper, device=device
+            )
+        except Exception as e:
+            trace = traceback.format_exc()
+            log(f"error: {e}: {trace}")
+            raise
+
     runpod.start(
         {
-            "handler": lambda event: handle(
-                event=event, model2Whisper=friendlyModel2Whisper, device=device
-            ),
+            "handler": handler,
         }
     )
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        log(f"error: {e}: {traceback.format_exc()}")
+        raise

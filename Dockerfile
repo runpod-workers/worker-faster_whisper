@@ -56,4 +56,6 @@ RUN python3 -m venv /app/venv && \
     python3 -m pip install -r requirements.txt
 
 COPY src/rp_handler.py /app/rp_handler.py
-CMD [ "python3", "rp_handler.py" ]
+# we're using a virtual environment: we want to THAT python interpreter, not the system one.
+# TODO: this seems like too many layers of indirection.
+CMD [ "./venv/bin/python3.12", "rp_handler.py" ] 
