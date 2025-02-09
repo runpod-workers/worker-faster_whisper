@@ -1,3 +1,0 @@
-runpod~=1.7.0
-
-faster-whisper==0.10.0

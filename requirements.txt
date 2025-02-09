@@ -1,0 +1,2 @@
+runpod~=1.7.7
+faster-whisper~=1.1.1

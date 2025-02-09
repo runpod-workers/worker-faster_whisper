@@ -1,54 +1,61 @@
 # Use specific version of nvidia cuda image
-FROM nvidia/cuda:11.7.1-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:12.6.3-cudnn-runtime-ubuntu24.04
 
-# Remove any third-party apt sources to avoid issues with expiring keys.
-RUN rm -f /etc/apt/sources.list.d/*.list
 
-# Set shell and noninteractive environment variables
-SHELL ["/bin/bash", "-c"]
+
 ENV DEBIAN_FRONTEND=noninteractive
-ENV SHELL=/bin/bash
+
 
 # Set working directory
-WORKDIR /
+RUN mkdir /app
+WORKDIR /app
 
-# Update and upgrade the system packages (Worker Template)
-RUN apt-get update -y && \
-    apt-get upgrade -y && \
-    apt-get install --yes --no-install-recommends sudo ca-certificates git wget curl bash libgl1 libx11-6 software-properties-common ffmpeg build-essential -y &&\
-    apt-get autoremove -y && \
-    apt-get clean -y && \
-    rm -rf /var/lib/apt/lists/*
+# update ubuntu
+RUN apt-get update -y && apt-get dist-upgrade -y
 
-# Add the deadsnakes PPA and install Python 3.10
-RUN add-apt-repository ppa:deadsnakes/ppa -y && \
-    apt-get install python3.10-dev python3.10-venv python3-pip -y --no-install-recommends && \
-    ln -s /usr/bin/python3.10 /usr/bin/python && \
-    rm /usr/bin/python3 && \
-    ln -s /usr/bin/python3.10 /usr/bin/python3 && \
-    apt-get autoremove -y && \
-    apt-get clean -y && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get install -y --no-install-recommends bash
+# install binary dependencies:
+# TODO: figure out which of these we actually need - this seems like massive overkill and is kind of a waste.
+RUN apt-get install -y --no-install-recommends \
+    bash \
+    build-essential \
+    ca-certificates \
+    curl \
+    ffmpeg \
+    git \
+    libgl1 \
+    libnvidia-common-565-server \
+    libnvidia-compute-565-server \
+    libnvidia-decode-565-server \
+    libnvidia-decode-565-server \
+    libnvidia-encode-565-server \
+    libnvidia-encode-565-server \
+    libnvidia-extra-565-server \
+    libnvidia-gl-565-server \
+    libx11-6 \
+    nvidia-utils-565-server \
+    software-properties-common \
+    sudo \
+    wget
 
-# Download and install pip
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
-    python get-pip.py && \
-    rm get-pip.py
+# python3
+RUN apt-get install -y --no-install-recommends \
+    python3-full \
+    python3-pip \
+    python3-setuptools \
+    python3-wheel
 
-# Install Python dependencies (Worker Template)
-COPY builder/requirements.txt /requirements.txt
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --upgrade pip && \
-    pip install -r /requirements.txt --no-cache-dir && \
-    rm /requirements.txt
 
-# Copy and run script to fetch models
-COPY builder/fetch_models.py /fetch_models.py
-RUN python /fetch_models.py && \
-    rm /fetch_models.py
 
-# Copy source code into image
-COPY src .
 
-# Set default command
-CMD python -u /rp_handler.py
+
+COPY requirements.txt /app/requirements.txt
+RUN python3 -m venv /app/venv && \
+    . /app/venv/bin/activate && \
+    python3 -m pip install --upgrade pip && \
+    python3 -m pip install -r requirements.txt
+
+COPY src/rp_handler.py /app/rp_handler.py
+# we're using a virtual environment: we want to THAT python interpreter, not the system one.
+# TODO: this seems like too many layers of indirection.
+CMD [ "./venv/bin/python3.12", "rp_handler.py" ] 
