@@ -10,11 +10,7 @@ import tempfile
 
 from rp_schema import INPUT_VALIDATIONS
 from runpod.serverless.utils import download_files_from_urls, rp_cleanup, rp_debugger
-
-# Waiting for https://github.com/runpod/runpod-python/pull/401
-# to be merged into runpod-python. Meanwhile copying the file and fixing in place
-# from runpod.serverless.utils.rp_validator import validate 
-from rp_validator import validate
+from runpod.serverless.utils.rp_validator import validate 
 
 import runpod
 import predict
