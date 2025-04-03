@@ -10,7 +10,8 @@ import tempfile
 
 from rp_schema import INPUT_VALIDATIONS
 from runpod.serverless.utils import download_files_from_urls, rp_cleanup, rp_debugger
-from runpod.serverless.utils.rp_validator import validate
+from runpod.serverless.utils.rp_validator import validate 
+
 import runpod
 import predict
 

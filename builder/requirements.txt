@@ -1,3 +1,6 @@
-runpod~=1.7.0
+#runpod~=1.7.0
+git+https://github.com/nerdylive123/runpod-python.git@fix-validation-bug
 
-faster-whisper==0.10.0
+faster-whisper==1.1.1
+
+hf_xet==0.1.4
