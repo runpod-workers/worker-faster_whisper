@@ -1,4 +1,4 @@
-![Faster Whisper Logo](https://github.com/user-attachments/assets/c288b1a0-2a76-4205-84d1-5d0e13019fb0)
+![Faster Whisper Logo](https://5ccaof7hvfzuzf4p.public.blob.vercel-storage.com/banner-pjbGKw0buxbWGhMVC165Gf9qgqWo7I.jpeg)
 
 [![RunPod](https://api.runpod.io/badge/runpod-workers/worker-faster_whisper)](https://www.runpod.io/console/hub/runpod-workers/worker-faster_whisper)
 
