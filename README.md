@@ -1,4 +1,4 @@
-<h1>Faster Whisper</h1>
+![Faster Whisper Logo](https://github.com/user-attachments/assets/c288b1a0-2a76-4205-84d1-5d0e13019fb0)
 
 [![RunPod](https://api.runpod.io/badge/runpod-workers/worker-faster_whisper)](https://www.runpod.io/console/hub/runpod-workers/worker-faster_whisper)
 
