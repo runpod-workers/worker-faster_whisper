@@ -24,6 +24,11 @@ INPUT_VALIDATIONS = {
         'required': False,
         'default': False
     },
+    'translation': {
+        'type': str,
+        'required': False,
+        'default': 'plain_text'
+    },
     'language': {
         'type': str,
         'required': False,
