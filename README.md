@@ -1,22 +1,14 @@
-<div align="center">
+<h1>Faster Whisper</h1>
 
-<h1>Faster Whisper | Worker</h1>
+[Faster Whisper](https://github.com/guillaumekln/faster-whisper) is designed to process audio files using various Whisper models, with options for transcription formatting, language translation and more.
 
-This repository contains the [Faster Whisper](https://github.com/guillaumekln/faster-whisper) Worker for RunPod. The Whisper Worker is designed to process audio files using various Whisper models, with options for transcription formatting, language translation, and more. It's part of the RunPod Workers collection aimed at providing diverse functionality for endpoint processing.
-
-[Endpoint Docs](https://docs.runpod.io/reference/faster-whisper)
-
-[Docker Image](https://hub.docker.com/r/runpod/ai-api-faster-whisper)
-
-</div>
-
-## Model Inputs
+## Input
 
 | Input                               | Type  | Description                                                                                                                                              |
-|-------------------------------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `audio`                             | Path  | Audio file                                                                                                                                               |
+| ----------------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `audio`                             | Path  | URL to Audio file                                                                                                                                        |
 | `audio_base64`                      | str   | Base64-encoded audio file                                                                                                                                |
-| `model`                             | str   | Choose a Whisper model. Choices: "tiny", "base", "small", "medium", "large-v1", "large-v2", "large-v3", "turbo". Default: "base"                                  |
+| `model`                             | str   | Choose a Whisper model. Choices: "tiny", "base", "small", "medium", "large-v1", "large-v2", "large-v3", "turbo". Default: "base"                         |
 | `transcription`                     | str   | Choose the format for the transcription. Choices: "plain_text", "formatted_text", "srt", "vtt". Default: "plain_text"                                    |
 | `translate`                         | bool  | Translate the text to English when set to True. Default: False                                                                                           |
 | `translation`                       | str   | Choose the format for the translation. Choices: "plain_text", "formatted_text", "srt", "vtt". Default: "plain_text"                                      |
@@ -36,46 +28,41 @@ This repository contains the [Faster Whisper](https://github.com/guillaumekln/fa
 | `enable_vad`                        | bool  | If True, use the voice activity detection (VAD) to filter out parts of the audio without speech. This step is using the Silero VAD model. Default: False |
 | `word_timestamps`                   | bool  | If True, include word timestamps in the output. Default: False                                                                                           |
 
-## Test Inputs
+### Example
 
 The following inputs can be used for testing the model:
 
 ```json
 {
-    "input": {
-        "audio": "https://github.com/runpod-workers/sample-inputs/raw/main/audio/gettysburg.wav"
-    }
+  "input": {
+    "audio": "https://github.com/runpod-workers/sample-inputs/raw/main/audio/gettysburg.wav"
+  }
 }
 ```
 
-## Sample output
+producing an output like this:
+
 ```json
 {
-    "segments": [
-        {
-            "id": 1,
-            "seek": 106,
-            "start": 0.11,
-            "end": 3.11,
-            "text": " Hola mundo.",
-            "tokens": [
-                50364,
-                22637,
-                7968,
-                13,
-                50514
-            ],
-            "temperature": 0.1,
-            "avg_logprob": -0.8348079785480325,
-            "compression_ratio": 0.5789473684210527,
-            "no_speech_prob": 0.1453857421875
-        }
-    ],
-    "detected_language": "es",
-    "transcription": "Hola mundo.",
-    "translation": null,
-    "device": "cuda",
-    "model": "large-v2",
-    "translation_time": 0.7796223163604736
+  "segments": [
+    {
+      "id": 1,
+      "seek": 106,
+      "start": 0.11,
+      "end": 3.11,
+      "text": " Hello and welcome!",
+      "tokens": [50364, 25, 7, 287, 50514],
+      "temperature": 0.1,
+      "avg_logprob": -0.8348079785480325,
+      "compression_ratio": 0.5789473684210527,
+      "no_speech_prob": 0.1453857421875
+    }
+  ],
+  "detected_language": "en",
+  "transcription": "Hello and welcome!",
+  "translation": null,
+  "device": "cuda",
+  "model": "turbo",
+  "translation_time": 0.3796223163604736
 }
 ```
