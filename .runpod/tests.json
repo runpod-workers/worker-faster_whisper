@@ -1,0 +1,36 @@
+{
+  "tests": [
+    {
+      "name": "basic_test",
+      "input": {
+        "audio": "https://github.com/runpod-workers/sample-inputs/raw/main/audio/gettysburg.wav",
+        "model": "turbo",
+        "transcription": "plain text",
+        "translate": false,
+        "temperature": 0,
+        "best_of": 5,
+        "beam_size": 5,
+        "suppress_tokens": "-1",
+        "condition_on_previous_text": false,
+        "temperature_increment_on_fallback": 0.2,
+        "compression_ratio_threshold": 2.4,
+        "logprob_threshold": -1,
+        "no_speech_threshold": 0.6
+      },
+      "timeout": 10000
+    }
+  ],
+  "config": {
+    "gpuTypeId": "NVIDIA GeForce RTX 4090",
+    "gpuCount": 1,
+    "allowedCudaVersions": [
+      "12.7",
+      "12.6",
+      "12.5",
+      "12.4",
+      "12.3",
+      "12.2",
+      "12.1"
+    ]
+  }
+}
