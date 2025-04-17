@@ -8,6 +8,8 @@ model_names = [
     "large-v1",
     "large-v2",
     "large-v3",
+    "distil-large-v2",
+    "distil-large-v3",
     "turbo",
 ]
 

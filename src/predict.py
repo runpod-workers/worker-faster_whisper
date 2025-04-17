@@ -39,8 +39,6 @@ class Predictor:
             threading.Lock()
         )  # Lock for thread-safe model loading/unloading
 
-    # Removed load_model method
-
     def setup(self):
         """No models are pre-loaded. Setup is minimal."""
         pass
