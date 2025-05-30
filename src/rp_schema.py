@@ -104,4 +104,14 @@ INPUT_VALIDATIONS = {
         'required': False,
         'default': False
     },
+    'repetition_penalty': {
+        'type': float,
+        'required': False,
+        'default': 1.0
+    },
+    'no_repeat_ngram_size': {
+        'type': int,
+        'required': False,
+        'default': 0
+    },
 }
