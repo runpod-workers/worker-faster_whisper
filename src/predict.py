@@ -65,6 +65,8 @@ class Predictor:
         no_speech_threshold=0.6,
         enable_vad=False,
         word_timestamps=False,
+        repetition_penalty=1.0,
+        no_repeat_ngram_size=0,
     ):
         """
         Run a single prediction on the model, loading/unloading models as needed.
@@ -154,6 +156,8 @@ class Predictor:
                 max_initial_timestamp=1.0,
                 word_timestamps=word_timestamps,
                 vad_filter=enable_vad,
+                repetition_penalty=repetition_penalty,
+                no_repeat_ngram_size=no_repeat_ngram_size,
             )
         )
 
