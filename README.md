@@ -46,6 +46,8 @@
 | `no_speech_threshold`               | float | If the probability of the token is higher than this value, consider the segment as silence. Default: 0.6                                                               |
 | `enable_vad`                        | bool  | If True, use the voice activity detection (VAD) to filter out parts of the audio without speech. This step is using the Silero VAD model. Default: False               |
 | `word_timestamps`                   | bool  | If True, include word timestamps in the output. Default: False                                                                                                         |
+| `repetition_penalty`                | float | To penalize the score of previously generated tokens (set > 1 to penalize). Default: 1.0                                                                               |
+| `no_repeat_ngram_size`              | int   | Prevent repetitions of ngrams with this size. Default: 0                                                                                                               |
 
 ### Example
 
