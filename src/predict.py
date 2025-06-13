@@ -26,6 +26,8 @@ AVAILABLE_MODELS = {
     "large-v2",
     "large-v3",
     "turbo",
+    "distil-large-v2",
+    "distil-large-v3",
 }
 
 
