@@ -64,6 +64,7 @@ class Predictor:
         logprob_threshold=-1.0,
         no_speech_threshold=0.6,
         enable_vad=False,
+        vad_parameters=None,
         word_timestamps=False,
     ):
         """
@@ -154,6 +155,7 @@ class Predictor:
                 max_initial_timestamp=1.0,
                 word_timestamps=word_timestamps,
                 vad_filter=enable_vad,
+                vad_parameters=vad_parameters,
             )
         )
 
