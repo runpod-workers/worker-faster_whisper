@@ -89,6 +89,7 @@ def run_whisper_job(job):
             logprob_threshold=job_input["logprob_threshold"],
             no_speech_threshold=job_input["no_speech_threshold"],
             enable_vad=job_input["enable_vad"],
+            vad_parameters=job_input["vad_parameters"],
             word_timestamps=job_input["word_timestamps"]
         )
 

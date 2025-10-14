@@ -4,7 +4,7 @@
       "name": "basic_test",
       "input": {
         "audio": "https://github.com/runpod-workers/sample-inputs/raw/main/audio/gettysburg.wav",
-        "model": "turbo",
+        "model": "large-v2",
         "transcription": "plain text",
         "translate": false,
         "temperature": 0,

@@ -1,18 +1,7 @@
 from faster_whisper.utils import download_model
 
-model_names = [
-    "tiny",
-    "base",
-    "small",
-    "medium",
-    "large-v1",
-    "large-v2",
-    "large-v3",
-    "distil-large-v2",
-    "distil-large-v3",
-    "turbo",
-]
-
+# Only download large-v2 model to save storage and ensure it's cached
+model_name = "large-v2"
 
 def download_model_weights(selected_model):
     """
@@ -22,9 +11,6 @@ def download_model_weights(selected_model):
     download_model(selected_model, cache_dir=None)
     print(f"Finished downloading {selected_model}.")
 
-
-# Loop through models sequentially
-for model_name in model_names:
-    download_model_weights(model_name)
-
-print("Finished downloading all models.")
+# Download only large-v2
+download_model_weights(model_name)
+print(f"Finished downloading {model_name}.")

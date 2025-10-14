@@ -99,6 +99,11 @@ INPUT_VALIDATIONS = {
         'required': False,
         'default': False
     },
+    'vad_parameters': {
+        'type': dict,
+        'required': False,
+        'default': None
+    },
     'word_timestamps': {
         'type': bool,
         'required': False,
