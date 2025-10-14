@@ -1,3 +1,4 @@
+# runpod>=1.7.9
 runpod~=1.7.9
 
 # PyTorch with CUDA 12.1 support (closest to CUDA 12.3, backward compatible)
