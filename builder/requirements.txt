@@ -1,3 +1,10 @@
 runpod~=1.7.9
 
-faster-whisper==1.1.0
+# PyTorch with CUDA 12.1 support (closest to CUDA 12.3, backward compatible)
+torch>=2.4.0
+
+# CTranslate2 >= 4.5.0 required for cuDNN 9 and CUDA 12.3 compatibility
+ctranslate2>=4.5.0
+
+# faster-whisper with improved CUDA 12.x compatibility
+faster-whisper>=1.1.1

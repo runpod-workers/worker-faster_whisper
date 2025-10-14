@@ -42,14 +42,35 @@ class Predictor:
     def setup(self):
         """Pre-load large-v2 model to avoid loading delays and memory issues."""
         print("Loading large-v2 model during setup...")
-        
+
+        # CUDA diagnostics
+        if rp_cuda.is_available():
+            print("CUDA is available")
+            if TORCH_AVAILABLE:
+                try:
+                    import torch
+                    print(f"PyTorch version: {torch.__version__}")
+                    print(f"CUDA version (PyTorch): {torch.version.cuda}")
+                    print(f"cuDNN version: {torch.backends.cudnn.version()}")
+                    print(f"Number of GPUs: {torch.cuda.device_count()}")
+                    if torch.cuda.device_count() > 0:
+                        print(f"GPU 0: {torch.cuda.get_device_name(0)}")
+                        print(f"GPU 0 Memory: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.2f} GB")
+                        print(f"GPU 0 Available Memory: {torch.cuda.mem_get_info(0)[0] / 1024**3:.2f} GB")
+                except Exception as diag_error:
+                    print(f"Warning: Could not get CUDA diagnostics: {diag_error}")
+            else:
+                print("Warning: PyTorch not available, limited CUDA diagnostics")
+        else:
+            print("CUDA is NOT available, will use CPU")
+
         # Clear CUDA cache before loading model to maximize available memory
         if rp_cuda.is_available():
             gc.collect()
             if TORCH_AVAILABLE:
                 torch.cuda.empty_cache()
                 print("Cleared CUDA cache before model loading")
-        
+
         try:
             self.model = WhisperModel(
                 "large-v2",
@@ -61,6 +82,7 @@ class Predictor:
             print("large-v2 model loaded successfully and cached.")
         except Exception as e:
             print(f"Error loading large-v2 model during setup: {e}")
+            print(f"Exception type: {type(e).__name__}")
             # Try to clear memory and provide helpful error message
             if rp_cuda.is_available():
                 gc.collect()
