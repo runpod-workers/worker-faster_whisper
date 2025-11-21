@@ -56,7 +56,7 @@ jobs:
           fi
 
           echo "New version detected ($new_version > $current_version). Updating runpod version..."
-          # Update requirements.txt with the new version while keeping '~='
+          # Update requirements.txt with the new version using '>='
           sed -i "s/runpod>=.*/runpod>=$new_version/" ./builder/requirements.txt
           echo "requirements.txt has been updated."
 
