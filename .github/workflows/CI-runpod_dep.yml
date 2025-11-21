@@ -24,7 +24,7 @@ jobs:
           echo "Fetching the current runpod version from requirements.txt..."
 
           # Get current version, allowing for '~=' operator
-          current_version=$(grep -oP 'runpod~=\K[^ ]+' ./builder/requirements.txt)
+          current_version=$(grep -oP 'runpod>=\K[^ ]+' ./builder/requirements.txt)
           echo "Current version: $current_version"
 
           # Get new version from PyPI
@@ -37,23 +37,27 @@ jobs:
               exit 1
           fi
 
-          # Extract major and minor from current version (e.g., 1.7)
-          current_major_minor=$(echo $current_version | cut -d. -f1,2)
-          new_major_minor=$(echo $new_version | cut -d. -f1,2)
+          if [ -z "$current_version" ]; then
+              echo "ERROR: Failed to extract current version from requirements.txt."
+              exit 1
+          fi
 
-          echo "Current major.minor: $current_major_minor"
-          echo "New major.minor: $new_major_minor"
-
-          # Check if the new version is within the current major.minor range (e.g., 1.7.x)
-          if [ "$new_major_minor" = "$current_major_minor" ]; then
-              echo "No update needed. The new version ($new_version) is within the allowed range (~= $current_major_minor)."
+          # Compare versions using sort -V (version sort)
+          if [ "$current_version" = "$new_version" ]; then
+              echo "No update needed. Already at version $new_version."
               exit 0
           fi
 
-          echo "New major/minor detected ($new_major_minor). Updating runpod version..."
+          # Check if new version is actually newer
+          newer_version=$(printf "%s\n%s" "$current_version" "$new_version" | sort -V | tail -n1)
+          if [ "$newer_version" = "$current_version" ]; then
+              echo "No update needed. Current version ($current_version) is already >= new version ($new_version)."
+              exit 0
+          fi
 
+          echo "New version detected ($new_version > $current_version). Updating runpod version..."
           # Update requirements.txt with the new version while keeping '~='
-          sed -i "s/runpod~=.*/runpod~=$new_version/" ./builder/requirements.txt
+          sed -i "s/runpod>=.*/runpod>=$new_version/" ./builder/requirements.txt
           echo "requirements.txt has been updated."
 
       - name: Create Pull Request
