@@ -17,7 +17,7 @@
         "logprob_threshold": -1,
         "no_speech_threshold": 0.6
       },
-      "timeout": 10000
+      "timeout": 60000
     }
   ],
   "config": {
