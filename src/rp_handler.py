@@ -6,6 +6,7 @@ rp_debugger:
 The handler must be called with --rp_debugger flag to enable it.
 """
 import base64
+import os
 import tempfile
 
 from rp_schema import INPUT_VALIDATIONS
@@ -61,12 +62,37 @@ def run_whisper_job(job):
     if job_input.get('audio', False) and job_input.get('audio_base64', False):
         return {'error': 'Must provide either audio or audio_base64, not both'}
 
+    audio_input = None
+
     if job_input.get('audio', False):
         with rp_debugger.LineTimer('download_step'):
-            audio_input = download_files_from_urls(job['id'], [job_input['audio']])[0]
+            downloaded = download_files_from_urls(job['id'], [job_input['audio']])
+            audio_input = downloaded[0] if downloaded else None
+
+        # Guard: download_files_from_urls returns None / "None" for failed
+        # fetches (e.g. expired presigned URL → 403). Without this check the
+        # handler would call MODEL.predict(audio=None) and crash inside PyAV
+        # with FileNotFoundError 'None', leaving the caller without a usable
+        # error signal and the credits already debited.
+        if not audio_input or audio_input == "None" or not os.path.exists(audio_input):
+            audio_url = job_input.get('audio') or ''
+            audio_url_host = audio_url.split('/')[2] if audio_url.count('/') >= 2 else None
+            return {
+                "error": "DOWNLOAD_FAILED",
+                "message": (
+                    "Failed to download audio from the provided URL. "
+                    "The URL may have expired, been revoked, or returned a non-2xx response."
+                ),
+                "audio_url_host": audio_url_host,
+            }
 
     if job_input.get('audio_base64', False):
         audio_input = base64_to_tempfile(job_input['audio_base64'])
+        if not audio_input or not os.path.exists(audio_input):
+            return {
+                "error": "BASE64_DECODE_FAILED",
+                "message": "Failed to decode audio_base64 to a temp file.",
+            }
 
     with rp_debugger.LineTimer('prediction_step'):
         whisper_results = MODEL.predict(
