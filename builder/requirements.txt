@@ -1,3 +1,14 @@
 runpod~=1.9.0
 
 faster-whisper==1.1.0
+
+# faster-whisper 1.1.0 does `import requests` without declaring it, and passes
+# `local_dir_use_symlinks` to snapshot_download. huggingface_hub 1.0 dropped the
+# requests dependency and removed that argument, so an unpinned install breaks
+# both importing faster_whisper and baking the weights.
+huggingface_hub[hf_xet]>=0.30,<1.0
+
+# faster-whisper declares av>=11 with no upper bound, but calls
+# av.open(..., metadata_errors="ignore"); PyAV 19 removed that argument, which
+# breaks audio decoding on every request.
+av>=11,<19

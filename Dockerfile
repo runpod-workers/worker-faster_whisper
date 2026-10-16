@@ -35,7 +35,6 @@ RUN apt-get update -y && \
 COPY builder/requirements.txt /requirements.txt
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade pip && \
-    pip install huggingface_hub[hf_xet] && \
     pip install -r /requirements.txt --no-cache-dir
 
 # Copy and run script to fetch models
