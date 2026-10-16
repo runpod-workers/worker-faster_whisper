@@ -1,30 +1,16 @@
 from faster_whisper.utils import download_model
 
-model_names = [
-    "tiny",
-    "base",
-    "small",
-    "medium",
-    "large-v1",
-    "large-v2",
-    "large-v3",
-    "distil-large-v2",
-    "distil-large-v3",
-    "turbo",
-]
+from model_config import MODEL_DIR, MODEL_REPO
 
 
-def download_model_weights(selected_model):
+def download_model_weights():
     """
-    Download model weights.
+    Download the kotoba-whisper CTranslate2 weights into the image.
     """
-    print(f"Downloading {selected_model}...")
-    download_model(selected_model, cache_dir=None)
-    print(f"Finished downloading {selected_model}.")
+    print(f"Downloading {MODEL_REPO} to {MODEL_DIR}...")
+    download_model(MODEL_REPO, output_dir=MODEL_DIR)
+    print(f"Finished downloading {MODEL_REPO}.")
 
 
-# Loop through models sequentially
-for model_name in model_names:
-    download_model_weights(model_name)
-
-print("Finished downloading all models.")
+if __name__ == "__main__":
+    download_model_weights()

@@ -1,4 +1,4 @@
-# faster-whisper turbo needs cudnnn >= 9
+# faster-whisper needs cudnn >= 9
 # see https://github.com/runpod-workers/worker-faster_whisper/pull/44
 FROM nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu22.04
 
@@ -37,10 +37,12 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade pip && \
     pip install -r /requirements.txt --no-cache-dir
 
-# Copy and run script to fetch models
+# Bake the kotoba-whisper weights into the image so cold starts need no network
+ENV MODEL_PATH=/models/kotoba-whisper-v2.0-faster
 COPY builder/fetch_models.py /fetch_models.py
+COPY src/model_config.py /model_config.py
 RUN python /fetch_models.py && \
-    rm /fetch_models.py
+    rm /fetch_models.py /model_config.py
 
 # Copy handler and other code
 COPY src .

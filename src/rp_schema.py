@@ -1,3 +1,5 @@
+from model_config import DEFAULT_CHUNK_LENGTH, MODEL_NAME
+
 INPUT_VALIDATIONS = {
     'audio': {
         'type': str,
@@ -12,27 +14,12 @@ INPUT_VALIDATIONS = {
     'model': {
         'type': str,
         'required': False,
-        'default': 'base'
+        'default': MODEL_NAME
     },
     'transcription': {
         'type': str,
         'required': False,
         'default': 'plain_text'
-    },
-    'translate': {
-        'type': bool,
-        'required': False,
-        'default': False
-    },
-    'translation': {
-        'type': str,
-        'required': False,
-        'default': 'plain_text'
-    },
-    'language': {
-        'type': str,
-        'required': False,
-        'default': None
     },
     'temperature': {
         'type': float,
@@ -57,7 +44,7 @@ INPUT_VALIDATIONS = {
     'length_penalty': {
         'type': float,
         'required': False,
-        'default': 0
+        'default': 1.0
     },
     'suppress_tokens': {
         'type': str,
@@ -72,7 +59,7 @@ INPUT_VALIDATIONS = {
     'condition_on_previous_text': {
         'type': bool,
         'required': False,
-        'default': True
+        'default': False
     },
     'temperature_increment_on_fallback': {
         'type': float,
@@ -103,5 +90,10 @@ INPUT_VALIDATIONS = {
         'type': bool,
         'required': False,
         'default': False
+    },
+    'chunk_length': {
+        'type': int,
+        'required': False,
+        'default': DEFAULT_CHUNK_LENGTH
     },
 }

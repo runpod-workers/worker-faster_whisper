@@ -3,10 +3,8 @@
     {
       "name": "basic_test",
       "input": {
-        "audio": "https://github.com/runpod-workers/sample-inputs/raw/main/audio/gettysburg.wav",
-        "model": "turbo",
-        "transcription": "plain text",
-        "translate": false,
+        "audio": "https://huggingface.co/kotoba-tech/kotoba-whisper-v1.0-ggml/resolve/main/sample_ja_speech.wav",
+        "transcription": "plain_text",
         "temperature": 0,
         "best_of": 5,
         "beam_size": 5,
@@ -15,9 +13,10 @@
         "temperature_increment_on_fallback": 0.2,
         "compression_ratio_threshold": 2.4,
         "logprob_threshold": -1,
-        "no_speech_threshold": 0.6
+        "no_speech_threshold": 0.6,
+        "chunk_length": 15
       },
-      "timeout": 10000
+      "timeout": 300000
     }
   ],
   "config": {

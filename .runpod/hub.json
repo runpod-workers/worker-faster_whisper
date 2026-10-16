@@ -1,12 +1,12 @@
 {
-  "title": "Faster Whisper",
-  "description": "Process audio files using various Whisper models, with options for transcription formatting, language translation and more.",
+  "title": "Kotoba Whisper",
+  "description": "Transcribe Japanese audio with kotoba-whisper-v2.0-faster, a CTranslate2 distillation of Whisper large-v3 specialised for Japanese. Supports plain text, formatted text, SRT and VTT output.",
   "type": "serverless",
   "category": "audio",
-  "iconUrl": "https://dummyimage.com/100x100/0066ff/fff&text=FW",
+  "iconUrl": "https://dummyimage.com/100x100/bc002d/fff&text=KW",
   "config": {
     "runsOn": "GPU",
-    "containerDiskInGb": 20,
+    "containerDiskInGb": 10,
     "gpuIds": "ADA_24",
     "gpuCount": 1,
     "allowedCudaVersions": ["12.7", "12.6", "12.5", "12.4", "12.3"]

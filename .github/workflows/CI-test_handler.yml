@@ -63,12 +63,16 @@ jobs:
           pip install -r builder/requirements.txt
 
       - name: Fetch and run models
+        env:
+          MODEL_PATH: /models/kotoba-whisper-v2.0-faster
         run: |
-          python builder/fetch_models.py
+          PYTHONPATH=src python builder/fetch_models.py
 
       - name: Execute Tests
+        env:
+          MODEL_PATH: /models/kotoba-whisper-v2.0-faster
         run: |
-          python src/rp_handler.py --test_input='{"input": {"audio": "https://github.com/runpod-workers/sample-inputs/raw/main/audio/gettysburg.wav"}}'
+          python src/rp_handler.py --test_input='{"input": {"audio": "https://huggingface.co/kotoba-tech/kotoba-whisper-v1.0-ggml/resolve/main/sample_ja_speech.wav"}}'
 
   terminate_worker:
     if: ${{ always() && !success() }}
