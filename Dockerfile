@@ -38,7 +38,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install huggingface_hub[hf_xet] && \
     pip install -r /requirements.txt --no-cache-dir
 
-# Copy and run script to fetch models
+# Copy and run script to fetch models.
+# WHISPER_MODELS (space-separated) bakes a subset; empty bakes every model.
+ARG WHISPER_MODELS=""
 COPY builder/fetch_models.py /fetch_models.py
 RUN python /fetch_models.py && \
     rm /fetch_models.py
