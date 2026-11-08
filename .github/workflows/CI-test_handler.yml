@@ -16,13 +16,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  # Build and test share one job: the image name contains the Docker Hub
+  # namespace, which matches a secret, and GitHub drops job outputs that
+  # contain secret values.
+  build-and-test:
     # Fork PRs get no secrets, so they can neither push the image nor
     # create an endpoint.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    outputs:
-      image: ${{ steps.tag.outputs.image }}
     steps:
       - uses: actions/checkout@v4
 
@@ -64,17 +65,12 @@ jobs:
           build-args: |
             WHISPER_MODELS=turbo
 
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      # Points at the branch of runpod-workers/worker-github_runner#13;
-      # switch to @main once that PR merges.
+      # Pinned to the head of runpod-workers/worker-github_runner#13, which
+      # stays resolvable after that PR merges and its branch is deleted.
+      # Move to @main after it merges.
       - name: Run .runpod/tests.json on a temporary endpoint
-        uses: runpod-workers/worker-github_runner/test-image@deanq/sls-1009-reusable-endpoint-test-workflow
+        uses: runpod-workers/worker-github_runner/test-image@757ffa21a01a55d9fa9bbf8d1adc4f4b2135c3e9
         with:
-          image: ${{ needs.build.outputs.image }}
+          image: ${{ steps.tag.outputs.image }}
           runpod-api-key: ${{ secrets.RUNPOD_API_KEY }}
           handler: /rp_handler.py
