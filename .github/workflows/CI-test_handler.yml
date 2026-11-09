@@ -43,6 +43,12 @@ jobs:
           # images don't pile up in Docker Hub.
           if [ -n "$PR_NUMBER" ]; then suffix="pr-$PR_NUMBER"; else suffix="$REF_NAME"; fi
           suffix="$(echo "$suffix" | tr -c 'A-Za-z0-9_.\n-' '-')"
+          # Docker tags max out at 128 chars; keep "ci-" + suffix well under it,
+          # with a hash of the full name so truncated names don't collide.
+          if [ "${#suffix}" -gt 100 ]; then
+            hash="$(printf '%s' "$suffix" | sha256sum | cut -c1-8)"
+            suffix="${suffix:0:90}-$hash"
+          fi
           echo "image=$IMAGE_REPO:ci-$suffix" >> "$GITHUB_OUTPUT"
 
       - name: Free disk space
@@ -56,6 +62,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push the CI image
+        id: build
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -71,6 +78,7 @@ jobs:
       - name: Run .runpod/tests.json on a temporary endpoint
         uses: runpod-workers/worker-github_runner/test-image@757ffa21a01a55d9fa9bbf8d1adc4f4b2135c3e9
         with:
-          image: ${{ steps.tag.outputs.image }}
+          # The digest pins the exact image built in this run; the tag is shared and mutable.
+          image: ${{ steps.tag.outputs.image }}@${{ steps.build.outputs.digest }}
           runpod-api-key: ${{ secrets.RUNPOD_API_KEY }}
           handler: /rp_handler.py
